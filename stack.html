@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>栈</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" />
+
+</head>
+
+<body>
+    <script>
+        //用函数声明Stack类
+        // function Stack() {
+        //     let items = [];
+        //     this.push = function (element) {
+        //         items.push(element);
+        //     }
+        //     this.pop = function (element) {
+        //         items.pop(element);
+        //     }
+        //     this.peek = function () {
+        //         return items[items.length - 1];
+        //     }
+        //     this.isEmpty = function () {
+        //         return items.length==0;
+        //     }
+        //     this.size = function(){
+        //         return items.length;
+        //     }
+        //     this.clear = function(){
+        //         return items = [];
+        //     }
+        //     this.print = function(){
+        //         console.log(items.toString());
+        //     }
+        // }
+        // let stack = new Stack();
+
+        // console.log(stack.isEmpty())
+        // stack.push(5)
+        // stack.push(8)
+        // console.log(stack.peek())
+        // stack.push(11)
+        // console.log(stack.size())
+        // console.log(stack.isEmpty())
+        // stack.push(15)
+        // stack.print()
+        // stack.pop()
+        // stack.pop()
+        // console.log(stack.size())
+        // stack.print()
+
+        //用ES6声明Stack类
+        // class Stack {
+        //     constructor(){
+        //         this.items = [];
+        //     }
+        //     push(ele){
+        //         this.items.push(ele);
+        //     }
+        //     pop(ele){
+        //         this.items.pop(ele);
+        //     }
+        //     peek(){
+        //         return this.items[this.items.length-1]
+        //     }
+        //     isEmpty(){
+        //         return this.items.length==0;
+        //     }
+        //     size(){
+        //         return this.items.length;
+        //     }
+        //     clear(){
+        //         return this.items = [];
+        //     }
+        //     print(){
+        //         return console.log(this.items.toString())
+        //     }
+        // }
+        // const stack = new Stack()
+        // const stack1 = new Stack()
+        // stack.push(1)
+        // console.log(stack.isEmpty());
+        // stack.print()
+        // console.log(stack)
+        // console.log(stack1)
+
+
+        //
+        // let _items = Symbol()
+        // class Stack {
+        //     constructor(){
+        //         this[_items] = [];
+        //     }
+        //     push(ele){
+        //         this[_items].push(ele);
+        //     }
+        //     pop(ele){
+        //         this[_items].pop(ele);
+        //     }
+        //     peek(){
+        //         return this[_items][this[_items].length-1]
+        //     }
+        //     isEmpty(){
+        //         return this[_items].length==0;
+        //     }
+        //     size(){
+        //         return this[_items].length;
+        //     }
+        //     clear(){
+        //         return this[_items] = [];
+        //     }
+        //     print(){
+        //         return console.log(this[_items].toString())
+        //     }
+        // }
+        // let stack = new Stack();
+        // stack.push(5)
+        // stack.push(8)
+        // console.log(stack);
+        // let objectSymbols = Object.getOwnPropertySymbols(stack)
+        // console.log(objectSymbols)
+        // console.log(objectSymbols[0])
+        // console.log(stack[objectSymbols[0]])
+        // stack[objectSymbols[0]].push(1)
+        // stack.print()
+
+        //使用ES6的WeakMap实现类
+        let Stack = (function () {
+            const items = new WeakMap();
+            // console.log(items)
+            class Stack {
+                constructor() {
+                    items.set(this, []);
+                }
+                push(ele) {
+                    let s = items.get(this);
+                    s.push(ele)
+                }
+                pop(ele) {
+                    let s = items.get(this);
+                    let r = s.pop();  //删除数组中的最后一项并将被删除的项返回
+                    return r;
+                }
+                peek() {
+                    let s = items.get(this);
+                    return s[s.length - 1];
+                }
+                isEmpty() {
+                    let s = items.get(this);
+                    return s.length == 0;
+                }
+                size() {
+                    let s = items.get(this);
+                    return s.length;
+                }
+                clear() {
+                    let s = items.get(this);
+                    return s = [];
+                }
+                print() {
+                    let s = items.get(this);
+                    let g = s.toString();
+                    console.log(g);
+                }
+            }
+            return Stack;
+        })()
+ 
+        //使用栈实现一个十进制转二进制
+        // function divideBy2(decNum) {
+        //     var remStack = new Stack(),
+        //         rem,
+        //         binaryString = '';
+
+        //     while (decNum > 0) {
+        //         rem = Math.floor(decNum % 2);
+        //         remStack.push(rem);
+        //         decNum = Math.floor(decNum / 2);
+        //     }
+        //     while (!remStack.isEmpty()) {
+        //         binaryString += remStack.pop().toString();
+        //     }
+        //     return binaryString;
+        // }
+        // console.log(divideBy2(233))
+        // console.log(divideBy2(1000))
+
+        //十进制转任意进制
+        function baseConverter(decNum,base){
+            var remStack = new Stack(),
+            rem,
+            baseString = '',
+            digits = '0123456789ABCDEF';
+
+            while(decNum > 0){
+                rem = Math.floor(decNum%base);
+                remStack.push(rem);
+                decNum = Math.floor(decNum/base)
+            }
+            while(!remStack.isEmpty()){
+                baseString += digits[remStack.pop()]
+            }
+            return baseString
+        }
+        console.log(baseConverter(100345,2))
+        console.log(baseConverter(100345,8))
+        console.log(baseConverter(100345,16))
+        // let digits = '0123456789ABCDEF';
+        // console.log(digits[15])
+    </script>
+</body>
+
+</html>

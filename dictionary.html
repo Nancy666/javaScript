@@ -64,7 +64,11 @@
             this.getItems = function () {
                 return items
             }
-
+            
+            this.clear = function() {
+                return items = {}
+            }
+            
             this.size = function () {
                 return this.keys().length
             }

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>链表</title>
+</head>
+
+<body>
+    <script>
+        var linkedList = function () {
+
+            var head = null;
+            var length = 0;
+
+            var Node = function (element) {
+                this.element = element;
+                this.next = null
+            }
+
+            //向链表尾部添加元素
+            this.append = function (element) {
+                var node = new Node(element);
+                // node = {
+                //    element:element,
+                //    next:null
+                // }
+
+                if (head == null) {   //此时链表为空
+                    head = node;
+                } else {
+                    var current = head;
+                    while (current.next) {
+                        current = current.next;
+                    }
+                    current.next = node;
+                }
+                length++
+            }
+
+            //得到链表头
+            this.getHead = function () {
+                return head
+            }
+
+            //向链表某个位置插入元素
+            this.insert = function (position, element) {
+                var node = new Node(element)
+                // 越界
+                if (position > -1 && position < length) {
+                    if (position == 0) {
+                        var current = head;
+                        head = node;
+                        head.next = current;
+                    } else {
+                        var index = 0;        //到position的步数
+                        var current = head;   //当前项
+                        var previous = null;  //当前项的前一项
+                        while (index < position) {    //当index==position的时候跳出循环
+                            previous = current;
+                            current = current.next;
+                            index++
+                        }
+                        previous.next = node;
+                        node.next = current;
+                    }
+                }
+                length++
+            }
+
+            //移除链表某一位置的元素
+            this.removeAt = function (position) {
+                if (position > -1 && position < length) {
+                    if (position == 0) {        //删除链表头
+                        var current = head;
+                        head = current.next;
+                    } else {
+                        var index = 0;
+                        var current = head;
+                        var previous = null;
+                        while (index < position) {
+                            previous = current;
+                            current = current.next;
+                            index++
+                        }
+                        //当index==position的时候跳出循环
+                        previous.next = current.next;
+                    }
+                    length--;
+                    return current;   //返回被删除的项
+                }
+                return null;
+            }
+
+            //获取某个元素的位置
+            this.indexOf = function (element) {
+                var current = head;
+                var index = 0;
+                while (current) {    //当current为null时，跳出循环，此时current值为链表尾，全部循环完毕
+                    if (current.element == element) {
+                        return index
+                    }
+                    current = current.next;
+                    index++;
+                }
+                //全部循环完还没有返回index的话，返回-1
+                return -1;
+            }
+
+            //删除某个元素,返回被删除的元素
+            //借助indexOf方法和removeAt方法
+            this.remove = function (element) {
+                return this.removeAt(this.indexOf(element))
+            }
+
+            //检查链表是否为空
+            this.isEmpty = function () {
+                return length == 0;
+            }
+
+            //获取链表长度
+            this.size = function () {
+                return length;
+            }
+
+        }
+
+        var l = new linkedList();
+        l.append(1)
+        l.append(2)
+        l.append(3)
+    </script>
+</body>
+
+</html>

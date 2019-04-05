@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>哈希表和哈希算法</title>
+</head>
+
+<body>
+    <script>
+        //将键通过散列函数计算出散列值，然后将键对应的值存放到散列表对应的下标的位置
+        //eg: Jobs ——> 74+111+98+115 ——> 398 ——> [398]:jobs@qq.com
+        //优点：其他数据结构获取值需要遍历元素，而哈希表可以直接定位元素
+
+
+        var hashTable = function () {
+            var items = []
+
+            //散列函数
+            //key ——> number ——> items[number]
+            //eg: Jobs  每个字符对应的ASCII码   J-74 o-111 b-98 s-115
+
+            var loseloseHashCode = function (key) {
+                var hash = 0;
+                for (var i = 0; i < key.length; i++) {
+                    hash += key[i].charCodeAt()
+                }
+                return hash % 37
+            }
+
+            //冲突更小的算法
+            var djb2HashCode = function (key) {
+                var hash = 5381
+                for (var i = 0; i < key.length; i++) {
+                    hash += hash * 33 + key[i].charCodeAt()
+                }
+                return hash % 1013
+            }
+
+            //添加元素
+            this.put = function (key, value) {
+                var position = loseloseHashCode(key)
+                items[position] = value
+            }
+
+            //移除元素
+            this.remove = function (key) {
+                items[loseloseHashCode(key)] = undefined
+            }
+
+            //获取值
+            this.get = function (key) {
+                return items[loseloseHashCode(key)]
+            }
+
+            this.getItems = function () {
+                return items
+            }
+        }
+
+        var ht = new hashTable
+        // ht.put("Jobs", "jobs@qq.com")
+        // ht.put("Bob", "Bob@qq.com")
+
+        //散列表的冲突问题,取到的hashCode 是一样的
+        //解决方法有两种：一分离链接法，二线性探查法
+        ht.put("Donnie", "Donnie@qq.com")
+        ht.put("Ana", "Ana@qq.com")
+
+
+        //使用分离链接法解决散列表的冲突问题，需要借助链表
+        var linkedList = function () {
+            var head = null;
+            var length = 0;
+            var Node = function (element) {
+                this.element = element;
+                this.next = null
+            }
+            //向链表尾部添加元素
+            this.append = function (element) {
+                var node = new Node(element);
+                // node = {
+                //    element:element,
+                //    next:null
+                // }
+                if (head == null) {   //此时链表为空
+                    head = node;
+                } else {
+                    var current = head;
+                    while (current.next) {
+                        current = current.next;
+                    }
+                    current.next = node;
+                }
+                length++
+            }
+            //得到链表头
+            this.getHead = function () {
+                return head
+            }
+            //向链表某个位置插入元素
+            this.insert = function (position, element) {
+                var node = new Node(element)
+                // 越界
+                if (position > -1 && position < length) {
+                    if (position == 0) {
+                        var current = head;
+                        head = node;
+                        head.next = current;
+                    } else {
+                        var index = 0;        //到position的步数
+                        var current = head;   //当前项
+                        var previous = null;  //当前项的前一项
+                        while (index < position) {    //当index==position的时候跳出循环
+                            previous = current;
+                            current = current.next;
+                            index++
+                        }
+                        previous.next = node;
+                        node.next = current;
+                    }
+                }
+                length++
+            }
+            //移除链表某一位置的元素
+            this.removeAt = function (position) {
+                if (position > -1 && position < length) {
+                    if (position == 0) {        //删除链表头
+                        var current = head;
+                        head = current.next;
+                    } else {
+                        var index = 0;
+                        var current = head;
+                        var previous = null;
+                        while (index < position) {
+                            previous = current;
+                            current = current.next;
+                            index++
+                        }
+                        //当index==position的时候跳出循环
+                        previous.next = current.next;
+                    }
+                    length--;
+                    return current;   //返回被删除的项
+                }
+                return null;
+            }
+            //获取某个元素的位置
+            this.indexOf = function (element) {
+                var current = head;
+                var index = 0;
+                while (current) {    //当current为null时，跳出循环，此时current值为链表尾，全部循环完毕
+                    if (current.element == element) {
+                        return index
+                    }
+                    current = current.next;
+                    index++;
+                }
+                //全部循环完还没有返回index的话，返回-1
+                return -1;
+            }
+            //删除某个元素,返回被删除的元素
+            //借助indexOf方法和removeAt方法
+            this.remove = function (element) {
+                return this.removeAt(this.indexOf(element))
+            }
+            //检查链表是否为空
+            this.isEmpty = function () {
+                return length == 0;
+            }
+            //获取链表长度
+            this.size = function () {
+                return length
+            }
+        }
+
+        //分离链接法
+        var hashTable_L = function () {
+            var table = []
+
+            var loseloseHashCode = function (key) {
+                var hash = 0
+                for (var i = 0; i < key.length; i++) {
+                    hash += key[i].charCodeAt()
+                }
+                return hash % 37
+            }
+
+            //借助辅助类，需要把key也存储下来，方便在链表中查找值
+            var Node = function (key, value) {
+                this.key = key
+                this.value = value
+            }
+
+            this.put = function (key, value) {
+                var position = loseloseHashCode(key)
+
+                if (table[position]) {
+                    //如果该位置有值，说明已经是链表了
+                    table[position].append(new Node(key, value))
+                } else {
+                    //如果没值在该位置存储一个链表
+                    var l = new linkedList
+                    table[position] = l
+                    table[position].append(new Node(key, value))
+                }
+            }
+
+            this.get = function (key) {
+                var position = loseloseHashCode(key)
+                if (table[position]) {
+                    //链表的线性查找
+                    var head = table[position].getHead();
+                    var current = head
+                    while (current) {
+                        if (current.element.key == key) {
+                            return current.element.value
+                        }
+                        current = current.next
+                    }
+
+                } else {
+                    return undefined
+                }
+            }
+
+            //删除一个元素
+            this.remove = function (key) {
+                var position = loseloseHashCode(key)
+
+                if (table[position]) {
+                    var head = table[position].getHead()
+                    var current = head
+
+                    while (current) {
+                        if (current.element.key == key) {
+                            //借助了链表的remove方法和isEmpty方法，current.element是Node类
+                            table[position].remove(current.element)
+                            if (table[position].isEmpty()) {
+                                table[position] = undefined
+                            }
+                            return true
+                        }
+                        current = current.next
+                    }
+
+                } else {
+                    return false
+                }
+            }
+
+            this.getTable = function () {
+                return table
+            }
+
+        }
+        var hl = new hashTable_L;
+        hl.put("Donnie", "Donnie@qq.com")
+        hl.put("Ana", "Ana@qq.com")
+
+
+        //线性探查法
+        var hashTable_X = function () {
+            var table = []
+
+            var loseloseHashCode = function (key) {
+                var hash = 0
+                for (var i = 0; i < key.length; i++) {
+                    hash += key[i].charCodeAt()
+                }
+                return hash % 37
+            }
+
+            //借助辅助类，需要把key也存储下来，方便在链表中查找值
+            var Node = function (key, value) {
+                this.key = key
+                this.value = value
+            }
+
+            //添加元素
+            this.put = function (key, value) {
+                var position = loseloseHashCode(key)
+                if (table[position] == undefined) {
+                    //position这个位置为空，直接存储
+                    table[position] = new Node(key, value)
+                } else {
+                    //position这个位置不为空，继续向下一位寻找
+                    var index = position + 1
+                    while (table[index] !== undefined) {
+                        index++
+                    }
+                    table[index] = new Node(key, value)
+                }
+            }
+
+            //获取元素的值
+            this.get = function (key) {
+                var position = loseloseHashCode(key)
+                if (table[position].key == key) {
+                    return table[position].value
+                } else {
+                    var index = position + 1
+                    while (table[index].key !== key) {
+                        index++
+                    }
+                    return table[index].value
+                }
+            }
+
+            //删除元素
+            this.remove = function (key) {
+                var position = loseloseHashCode(key)
+
+                if (table[position] != undefined) {
+                    if (table[position].key == key) {
+                        table[position] = undefined
+                    } else {
+                        var index = position + 1
+                        while (table[index].key !== key) {
+                            index++
+                        }
+                        table[index] = undefined
+                    }
+                }
+                return undefined
+            }
+
+            this.getTable = function () {
+                return table
+            }
+        }
+
+        var hx = new hashTable_X;
+        hx.put("Donnie", "Donnie@qq.com")
+        hx.put("Ana", "Ana@qq.com")
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>集合</title>
+</head>
+
+<body>
+    <script>
+        var Set = function () {
+            var items = {}
+            //检查元素是否存在
+            this.has = function (value) {
+                return items.hasOwnProperty(value)
+            }
+            //添加元素
+            this.add = function (value) {
+                if (!this.has(value)) {
+                    items[value] = value
+                    return value
+                }
+                return false
+            }
+
+            //移除元素
+            this.remove = function (value) {
+                if (this.has(value)) {
+                    delete items[value]     //删除对象中的某个属性
+                    return true
+                }
+                return false
+            }
+
+            this.clear = function () {
+                return items = {}
+            }
+
+            //获取集合大小
+            this.size = function () {
+                return Object.keys(items).length
+            }
+
+            //提取集合的全部值并以数组形式返回
+            this.values = function () {
+                var values = []
+                for (var k in items) {
+                    if (items.hasOwnProperty(k)) {
+                        values.push(items[k])
+                    }
+                }
+                return values
+            }
+
+
+            //返回整个items
+            this.getItems = function () {
+                return items;
+            }
+
+            //并集
+            this.union = function (otherSet) {
+                var unionSet = new Set()
+                var values = this.values()
+                for (var i = 0; i < values.length; i++) {
+                    unionSet.add(values[i])
+                }
+                values = otherSet.values()
+                for (var i = 0; i < values.length; i++) {
+                    unionSet.add(values[i])
+                }
+                //返回一个新的集合
+                return unionSet
+            }
+
+            //交集
+            this.intersection = function (otherSet) {
+                var result = new Set()
+
+                var values = this.values()
+
+                for (var i = 0; i < values.length; i++) {
+                    if (otherSet.has(values[i])) {
+                        result.add(values[i])
+                    }
+                }
+                return result
+            }
+
+            //差集
+            this.difference = function (otherSet) {
+                var result = new Set()
+                var values = this.values()
+                for (var i = 0; i < values.length; i++) {
+                    if (!otherSet.has(values[i])) {
+                        result.add(values[i])
+                    }
+                }
+                return result
+            }
+
+        }
+        let s = new Set()
+        s.add(1)
+        s.add(2)
+        s.add(3)
+
+        let B = new Set()
+        B.add(2)
+        B.add(3)
+        B.add(4)
+
+        //并集
+        var result = s.union(B)
+        console.log(result)
+        console.log(result.getItems())
+
+        //交集
+        var result2 = s.intersection(B)
+        console.log(result2)
+        console.log(result2.getItems())
+
+        //差集
+        //A集合对B集合的差集，和B集合对A集合的差集不同
+        var result3 = s.difference(B)
+        console.log(result3)
+        console.log(result3.getItems())
+
+        
+
+    </script>
+</body>
+
+</html>
